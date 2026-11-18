@@ -108,3 +108,11 @@ table.tbl{border-collapse:collapse;width:100%;font-size:13px}
 .docs-tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:6px;margin-bottom:10px}
 .docs-tabs button{white-space:nowrap;padding:8px 13px;border-radius:10px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);font-weight:600}
 .docs-tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
+
+/* kunci API */
+.keypanel .kp-status{margin:6px 0}
+details.keyguide{margin-top:14px;border:1px solid var(--border);border-radius:12px;background:var(--surface2);padding:12px 14px}
+details.keyguide summary{cursor:pointer;font-weight:600;color:var(--text)}
+details.keyguide ol{margin:10px 0 8px 18px;padding:0;display:grid;gap:8px;line-height:1.55}
+details.keyguide code{background:rgba(255,255,255,.08);padding:1px 6px;border-radius:6px}
+details.keyguide a{color:var(--accent,#ff7a1a)}

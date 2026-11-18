@@ -239,14 +239,55 @@ async function modelList() {
   try { const sb = await getSB(); const { data } = await sb.from('settings').select('key,value').eq('key', 'gemini_model'); first = data && data[0] && data[0].value; } catch { /* abaikan */ }
   modelListCache = [...new Set([first, ...DEFAULT_MODELS].filter(Boolean))]; return modelListCache;
 }
+export const KEY_URL = 'https://aistudio.google.com/apikey';
+export function keyGuideHTML() {
+  return `<details class="keyguide"><summary>Cara mendapatkan kunci API Gemini (gratis)</summary>
+    <ol>
+      <li>Buka <a href="${KEY_URL}" target="_blank" rel="noopener">aistudio.google.com/apikey</a> lalu masuk dengan akun Google Anda.</li>
+      <li>Klik tombol <b>Create API key</b> (Buat kunci API). Bila diminta memilih proyek, pilih <b>Create API key in new project</b>.</li>
+      <li>Tunggu sebentar sampai kunci muncul, lalu klik ikon salin. Kunci diawali huruf <code>AIza</code> dan panjangnya sekitar 39 karakter.</li>
+      <li>Kembali ke sini, tempel kunci pada kolom di atas, tekan <b>Simpan</b>, lalu <b>Uji kunci</b> untuk memastikan kunci bekerja.</li>
+    </ol>
+    <p class="muted sm">Jatah gratis dibatasi Google per menit dan per hari, besarnya bisa berubah. Kalau muncul pesan batas tercapai, tunggu sebentar atau coba lagi besok. Kunci bersifat pribadi, jangan dibagikan ke orang lain. Di sini kunci hanya disimpan di browser Anda dan dikirim langsung ke Google.</p>
+  </details>`;
+}
+export async function testGeminiKey(key) {
+  try {
+    const r = await fetch('https://generativelanguage.googleapis.com/v1beta/models?pageSize=1', { headers: { 'x-goog-api-key': key } });
+    if (r.ok) return { ok: true };
+    let m = ''; try { m = (await r.json()).error.message; } catch { /* abaikan */ }
+    return { ok: false, msg: r.status === 400 || r.status === 403 ? 'Kunci tidak valid atau belum aktif. Periksa lagi hasil salinannya.' : (m || `Gagal menguji (${r.status}).`) };
+  } catch { return { ok: false, msg: 'Tidak bisa terhubung ke Google. Periksa koneksi internet.' }; }
+}
+const maskKey = (k) => (k ? `${k.slice(0, 4)}••••••${k.slice(-4)}` : '');
+export function keyPanelHTML() {
+  return `<div class="keypanel"><p class="muted sm">Kunci ini dipakai untuk fitur AI. Bila Arif Digital sudah memasang kunci di server, Anda tidak wajib mengisinya. Bila belum, atau jatah server habis, isi kunci Gemini milik Anda sendiri.</p>
+    <div class="kp-status" id="kpStatus"></div>
+    <div class="row" style="margin:10px 0"><input id="kpInp" type="password" placeholder="Tempel kunci, diawali AIza..." autocomplete="off" spellcheck="false" style="flex:1;min-width:220px"><button class="btn sm ghost" id="kpEye" type="button">Tampilkan</button></div>
+    <div class="row"><button class="btn primary sm" id="kpSave" type="button">Simpan</button><button class="btn sm" id="kpTest" type="button">Uji kunci</button><button class="btn sm ghost danger" id="kpDel" type="button">Hapus kunci</button></div>
+    ${keyGuideHTML()}</div>`;
+}
+export function bindKeyPanel(root) {
+  const inp = $('#kpInp', root), st = $('#kpStatus', root);
+  const paint = () => { const k = getUserKey(); st.innerHTML = k ? `<span class="chip acc">Kunci tersimpan di browser ini: ${esc(maskKey(k))}</span>` : '<span class="chip">Belum ada kunci pribadi</span>'; };
+  paint();
+  $('#kpEye', root).onclick = (e) => { const show = inp.type === 'password'; inp.type = show ? 'text' : 'password'; e.target.textContent = show ? 'Sembunyikan' : 'Tampilkan'; };
+  $('#kpSave', root).onclick = () => { const v = inp.value.trim(); if (v.length < 20) return toast('Kunci tampak terlalu pendek. Periksa lagi hasil salinannya.', 'err'); setUserKey(v); inp.value = ''; paint(); toast('Kunci tersimpan di browser ini.'); };
+  $('#kpTest', root).onclick = async () => { const v = inp.value.trim() || getUserKey(); if (!v) return toast('Isi kunci terlebih dahulu.', 'err'); const b = $('#kpTest', root); b.disabled = true; b.textContent = 'Menguji...'; const r = await testGeminiKey(v); b.disabled = false; b.textContent = 'Uji kunci'; toast(r.ok ? 'Kunci berfungsi dan siap dipakai.' : r.msg, r.ok ? undefined : 'err', 6000); };
+  $('#kpDel', root).onclick = () => { setUserKey(''); inp.value = ''; paint(); toast('Kunci dihapus dari browser ini.'); };
+}
 export function askKeyDialog() {
   return new Promise((resolve) => {
     let ok = false;
-    const d = dialog(`<h3>Kunci API Gemini</h3><p class="muted">Server belum memakai kunci milik Arif Digital, jadi masukkan kunci Gemini Anda sendiri. Kunci hanya disimpan di browser ini dan dikirim langsung ke Google.</p>
-      <label>Kunci API<input id="adKey" type="password" placeholder="AIza..." autocomplete="off" value="${esc(getUserKey())}"></label>
-      <p class="muted sm">Belum punya? Buat gratis di <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a>.</p>
-      <div class="ad-foot"><button class="btn ghost" data-x="0">Batal</button><button class="btn primary" data-x="1">Simpan</button></div>`, { onClose: () => { if (!ok) resolve(null); } });
-    d.el.addEventListener('click', (e) => { const b = e.target.closest('[data-x]'); if (!b) return; if (b.dataset.x === '1') { const v = $('#adKey', d.el).value.trim(); if (v.length < 20) { toast('Kunci tampak terlalu pendek.', 'err'); return; } setUserKey(v); ok = true; d.close(true); resolve(v); } else d.close(false); });
+    const d = dialog(`<h3>Kunci API Gemini</h3><p class="muted">Server belum memakai kunci milik Arif Digital atau jatahnya sedang habis, jadi masukkan kunci Gemini Anda sendiri. Kunci hanya disimpan di browser ini dan dikirim langsung ke Google.</p>
+      <label>Kunci API<input id="adKey" type="password" placeholder="AIza..." autocomplete="off" spellcheck="false" value="${esc(getUserKey())}"></label>
+      ${keyGuideHTML()}
+      <div class="ad-foot"><button class="btn ghost" data-x="0">Batal</button><button class="btn" data-x="t">Uji kunci</button><button class="btn primary" data-x="1">Simpan dan lanjut</button></div>`, { onClose: () => { if (!ok) resolve(null); } });
+    d.el.addEventListener('click', async (e) => {
+      const b = e.target.closest('[data-x]'); if (!b) return; const v = $('#adKey', d.el).value.trim();
+      if (b.dataset.x === 't') { if (v.length < 20) return toast('Isi kunci terlebih dahulu.', 'err'); b.disabled = true; const r = await testGeminiKey(v); b.disabled = false; return toast(r.ok ? 'Kunci berfungsi.' : r.msg, r.ok ? undefined : 'err', 6000); }
+      if (b.dataset.x === '1') { if (v.length < 20) { toast('Kunci tampak terlalu pendek.', 'err'); return; } setUserKey(v); ok = true; d.close(true); resolve(v); } else d.close(false);
+    });
   });
 }
 const wait = (ms, sig) => new Promise((res, rej) => { const t = setTimeout(res, ms); if (sig) sig.addEventListener('abort', () => { clearTimeout(t); rej(new DOMException('Dibatalkan', 'AbortError')); }); });

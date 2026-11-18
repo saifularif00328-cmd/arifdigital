@@ -12,9 +12,9 @@ Website portofolio Arif Digital beserta dua produk webapp: **Generator Perangkat
 - `config.js` : alamat dan kunci publik Supabase, kontak
 
 ## Langkah pasang (urut)
-1. **Database.** Buka Supabase, project `fjanarkvsfylcghstzob`, menu SQL Editor. Jalankan `supabase/02_fungsi_rpc.sql`, lalu `supabase/03_ai_jobs.sql`. (File 01 sudah terpasang.)
+1. **Database.** Buka Supabase, project `fjanarkvsfylcghstzob`, menu SQL Editor. Jalankan `supabase/02_fungsi_rpc.sql`, `03_ai_jobs.sql`, lalu `04_api_key.sql` (urut). (File 01 sudah terpasang.)
 2. **Akun admin.** Buka `/admin/`, daftar dengan email `saifularif00328@gmail.com`. Email ini sudah terdaftar sebagai admin di tabel `admins`.
-3. **AI dari server (opsional).** Di Supabase: Edge Functions, buat fungsi `ai-generate` dari `supabase/functions/ai-generate/index.ts`. Matikan "Verify JWT". Tambahkan secret `GEMINI_API_KEY`. Tanpa ini, guru memakai kunci Gemini sendiri (diisi di menu Profil Sekolah).
+3. **AI dari server (opsional).** Di Supabase: Edge Functions, buat fungsi `ai-generate` dari `supabase/functions/ai-generate/index.ts`. Matikan "Verify JWT". Kunci Gemini milik Bapak diisi lewat panel admin (menu Pengaturan), tidak perlu secret lagi. Tanpa kunci server, guru memakai kunci Gemini sendiri lewat menu Kunci API di tiap aplikasi.
 4. **GitHub Pages.** Repo `saifularif00328-cmd/arifdigital`. Di Settings, Pages, pilih Source: GitHub Actions. Setiap push ke `main` otomatis tayang lewat `.github/workflows/deploy.yml`.
 5. **Buat pengguna produk.** Dari panel admin, tambah pengguna dan beri akses produk. Tamu mendapat 3 kali pakai gratis, setelahnya wajib login.
 

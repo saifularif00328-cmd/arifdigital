@@ -40,6 +40,7 @@ details.card summary{cursor:pointer;font-weight:700}
   <button class="nav" data-p="riwayat"><i data-lucide="history"></i>Riwayat</button>
   <div class="grp">Pengaturan</div>
   <button class="nav" data-p="sekolah"><i data-lucide="school"></i>Profil Sekolah dan Kop</button>
+  <button class="nav" data-p="api"><i data-lucide="key-round"></i>Kunci API (AI)</button>
   <button class="nav" data-p="bantuan"><i data-lucide="circle-help"></i>Panduan</button>
   <div class="grp">Lainnya</div>
   <a class="nav" href="../e-rapor/"><i data-lucide="clipboard-list"></i>E-Rapor</a>
@@ -50,6 +51,7 @@ details.card summary{cursor:pointer;font-weight:700}
   <button data-p="hasil"><i data-lucide="file-text"></i><span>Hasil</span></button>
   <button data-p="riwayat"><i data-lucide="history"></i><span>Riwayat</span></button>
   <button data-p="sekolah"><i data-lucide="school"></i><span>Sekolah</span></button>
+  <button data-p="api"><i data-lucide="key-round"></i><span>Kunci</span></button>
   <button data-p="bantuan"><i data-lucide="circle-help"></i><span>Panduan</span></button>
 </nav>
 
@@ -87,8 +89,11 @@ details.card summary{cursor:pointer;font-weight:700}
     <div class="ph"><h1>Profil sekolah dan kop</h1><p>Dipakai otomatis untuk kop surat, identitas, dan tanda tangan semua dokumen.</p></div>
     <div class="card"><div id="schoolForm"></div><div class="ad-foot"><button class="btn primary" id="saveSchool">Simpan profil</button></div></div>
     <div class="card"><h3>Pratinjau kop</h3><div class="paperwrap"><div class="paper" style="min-height:0;padding:10mm" id="kopPv"></div></div></div>
-    <div class="card"><h3>Kunci API Gemini (opsional)</h3><p class="muted sm">Dipakai bila server Arif Digital belum memakai kunci sendiri. Kunci hanya tersimpan di browser ini.</p>
-      <div class="row" style="margin-top:8px"><input id="keyInp" type="password" placeholder="AIza..." style="flex:1;min-width:200px" autocomplete="off"><button class="btn" id="keySave">Simpan kunci</button></div></div>
+  </section>
+
+  <section class="page" id="p-api">
+    <div class="ph"><h1>Pengaturan kunci API</h1><p>Kunci Gemini untuk fitur AI, lengkap dengan cara mendapatkannya.</p></div>
+    <div class="card" id="keyPanel"></div>
   </section>
 
   <section class="page help" id="p-bantuan">

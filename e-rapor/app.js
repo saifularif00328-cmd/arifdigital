@@ -1,4 +1,4 @@
-import { $, $$, esc, lsGet, lsSet, debounce, toast, dialog, confirmBox, busy, mountAccountBar, useQuota, loadSchool, syncSchoolFromCloud, saveSchool, schoolFormHTML, readSchoolForm, bindSchoolForm, kopBlock, aiJSON, Doc, downloadBlob, safeName, zipFiles, icons, cloud, session, lib, onAccountChange, loadScript } from '../shared/core.js';
+import { $, $$, esc, lsGet, lsSet, debounce, toast, dialog, confirmBox, busy, mountAccountBar, useQuota, loadSchool, syncSchoolFromCloud, saveSchool, schoolFormHTML, readSchoolForm, bindSchoolForm, kopBlock, aiJSON, Doc, downloadBlob, safeName, zipFiles, icons, cloud, session, lib, onAccountChange, loadScript, keyPanelHTML, bindKeyPanel } from '../shared/core.js';
 import { JENJANG, KURIKULUM, ROMAN, faseOf, isMadrasah, mapelList, DIMENSI_LULUSAN } from '../shared/kurikulum.js';
 import * as R from './rapor.js';
 import { tanggalID } from '../generator/prompts.js';
@@ -22,7 +22,7 @@ function go(p) {
 }
 document.addEventListener('click', (e) => { const b = e.target.closest('[data-p]'); if (b) go(b.dataset.p); });
 $('#btnMore').addEventListener('click', () => {
-  const items = [['mapel', 'Mapel dan TP/KD'], ['karakter', P() && P().kur === 'k13' ? 'Sikap' : 'Kokurikuler'], ['tambahan', 'Kehadiran dan Catatan'], ['leger', 'Leger dan Rekap'], ['sekolah', 'Profil Sekolah'], ['bantuan', 'Panduan']];
+  const items = [['mapel', 'Mapel dan TP/KD'], ['karakter', P() && P().kur === 'k13' ? 'Sikap' : 'Kokurikuler'], ['tambahan', 'Kehadiran dan Catatan'], ['leger', 'Leger dan Rekap'], ['sekolah', 'Profil Sekolah'], ['api', 'Kunci API (AI)'], ['bantuan', 'Panduan']];
   const d = dialog(`<h3>Menu</h3><div class="stack">${items.map(([k, t]) => `<button class="btn block" data-go="${k}">${t}</button>`).join('')}<a class="btn block ghost" href="../generator/">Generator Perangkat Ajar</a><a class="btn block ghost" href="../">Kembali ke beranda</a></div>`);
   d.el.addEventListener('click', (e) => { const b = e.target.closest('[data-go]'); if (b) { d.close(); go(b.dataset.go); } });
 });
@@ -326,7 +326,7 @@ function renderSekolah() {
 
 /* ---------- mulai ---------- */
 (async function init() {
-  icons(); mountAccountBar($('#acct'), PRODUK);
+  icons(); $('#keyPanel').innerHTML = keyPanelHTML(); bindKeyPanel($('#keyPanel')); mountAccountBar($('#acct'), PRODUK);
   const pull = async () => { if (!session()) return; await syncSchoolFromCloud(); school = loadSchool(); if (!projects.length) { const c = await cloud.get(PRODUK, 'projects'); if (Array.isArray(c) && c.length) { projects = c; curId = c[0].id; lsSet('ad_rapor_projects', projects); lsSet('ad_rapor_cur', curId); go('proyek'); } } };
   await pull(); onAccountChange(pull);
   if (curId && !P()) curId = null; renderProyek(); renderBar();

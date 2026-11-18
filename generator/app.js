@@ -1,4 +1,4 @@
-import { $, $$, esc, uid, lsGet, lsSet, toast, dialog, confirmBox, busy, mountAccountBar, useQuota, loadSchool, syncSchoolFromCloud, saveSchool, schoolFormHTML, readSchoolForm, bindSchoolForm, schoolDialog, kopBlock, readFiles, fileParts, FILE_ACCEPT, aiJSON, Doc, downloadBlob, safeName, zipFiles, icons, cloud, session, getUserKey, setUserKey, onAccountChange } from '../shared/core.js';
+import { $, $$, esc, uid, lsGet, lsSet, toast, dialog, confirmBox, busy, mountAccountBar, useQuota, loadSchool, syncSchoolFromCloud, saveSchool, schoolFormHTML, readSchoolForm, bindSchoolForm, schoolDialog, kopBlock, readFiles, fileParts, FILE_ACCEPT, aiJSON, Doc, downloadBlob, safeName, zipFiles, icons, cloud, session, getUserKey, setUserKey, keyPanelHTML, bindKeyPanel, onAccountChange } from '../shared/core.js';
 import { JENJANG, KURIKULUM, ROMAN, faseOf, isMadrasah, mapelList, DOKUMEN, MODEL_BELAJAR, DIMENSI_LULUSAN, DIMENSI_P5, PANCA_CINTA, BULAN_GANJIL, BULAN_GENAP } from '../shared/kurikulum.js';
 import * as P from './prompts.js';
 
@@ -260,12 +260,11 @@ function renderSekolah() {
   const pv = () => { const p = readSchoolForm(root, school); p.logo = logo; $('#kopPv').innerHTML = Doc.toHTML([kopBlock(p)]); };
   root.oninput = root.onchange = pv; root.addEventListener('click', () => setTimeout(pv, 50)); setTimeout(pv, 80);
   $('#saveSchool').onclick = () => { const p = readSchoolForm(root, school); p.logo = logo; saveSchool(p); school = p; paintCTA(); toast('Profil sekolah tersimpan.'); };
-  $('#keyInp').value = getUserKey();
-  $('#keySave').onclick = () => { setUserKey($('#keyInp').value.trim()); toast($('#keyInp').value.trim() ? 'Kunci tersimpan di browser ini.' : 'Kunci dihapus.'); };
 }
 
 /* ---------- mulai ---------- */
 (async function init() {
+  $('#keyPanel').innerHTML = keyPanelHTML(); bindKeyPanel($('#keyPanel'));
   redraw(); bindForm(); renderFiles(); icons();
   mountAccountBar($('#acct'), PRODUK);
   if (session()) { const ok = await syncSchoolFromCloud(); if (ok) { school = loadSchool(); paintCTA(); } }
