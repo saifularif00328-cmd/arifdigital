@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Generator Perangkat Ajar | Arif Digital</title>
+<meta name="description" content="Buat perangkat ajar Kurikulum Merdeka, K13, dan KBC untuk SD/MI sampai SMA/MA. Unduh Word, PDF, Excel, atau cetak langsung.">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+.hero-s{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+.kur{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:760px){.kur{grid-template-columns:1fr}}
+.kur button{text-align:left;padding:14px;border-radius:12px;border:1px solid var(--border);background:var(--surface2);color:#fff;display:block}
+.kur button b{display:block;margin-bottom:3px}.kur button span{font-size:12.5px;color:var(--muted)}
+.kur button.on{border-color:var(--accent);background:var(--accent-soft)}
+.cta{position:sticky;bottom:86px;z-index:20;display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;background:rgba(17,17,17,.96);backdrop-filter:blur(10px);border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-top:16px}
+@media(min-width:901px){.cta{bottom:16px}}
+.err-card{border-color:#7f1d1d;background:#170d0d}
+details.card summary{cursor:pointer;font-weight:700}
+.wk{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin:10px 0}.wk label{font-size:11.5px}
+@media(max-width:760px){.wk{grid-template-columns:repeat(3,1fr)}}
+.hist{display:flex;gap:12px;align-items:center;justify-content:space-between;padding:12px 14px;border:1px solid var(--border);border-radius:12px;background:var(--surface);margin-bottom:8px;flex-wrap:wrap}
+.help h3{margin-top:16px}.help ul{margin:6px 0 6px 20px;color:#ccc}.help li{margin-bottom:4px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../"><img src="../assets/icon.svg" alt=""><div>Generator Perangkat Ajar<small>by Arif Digital</small></div></a>
+  <div class="sp"></div><div class="acct" id="acct"></div>
+</header>
+<aside class="side" id="side">
+  <div class="grp">Perangkat</div>
+  <button class="nav on" data-p="buat"><i data-lucide="wand-sparkles"></i>Buat Perangkat</button>
+  <button class="nav" data-p="hasil"><i data-lucide="file-text"></i>Hasil</button>
+  <button class="nav" data-p="riwayat"><i data-lucide="history"></i>Riwayat</button>
+  <div class="grp">Pengaturan</div>
+  <button class="nav" data-p="sekolah"><i data-lucide="school"></i>Profil Sekolah dan Kop</button>
+  <button class="nav" data-p="bantuan"><i data-lucide="circle-help"></i>Panduan</button>
+  <div class="grp">Lainnya</div>
+  <a class="nav" href="../e-rapor/"><i data-lucide="clipboard-list"></i>E-Rapor</a>
+  <a class="nav" href="../"><i data-lucide="arrow-left"></i>Kembali ke beranda</a>
+</aside>
+<nav class="bnav" id="bnav">
+  <button class="on" data-p="buat"><i data-lucide="wand-sparkles"></i><span>Buat</span></button>
+  <button data-p="hasil"><i data-lucide="file-text"></i><span>Hasil</span></button>
+  <button data-p="riwayat"><i data-lucide="history"></i><span>Riwayat</span></button>
+  <button data-p="sekolah"><i data-lucide="school"></i><span>Sekolah</span></button>
+  <button data-p="bantuan"><i data-lucide="circle-help"></i><span>Panduan</span></button>
+</nav>
+
+<main class="main">
+  <section class="page on" id="p-buat">
+    <div class="ph"><h1>Buat perangkat ajar</h1><p>Isi sekali, pilih dokumen yang dibutuhkan, lalu unduh sebagai Word, PDF, atau Excel. Kop sekolah dan tanda tangan terisi otomatis.</p></div>
+    <div class="card"><h2>1. Kurikulum dan jenjang</h2><div id="cKur"></div></div>
+    <div class="card"><h2>2. Materi dan acuan</h2>
+      <div class="stack">
+        <label>Topik atau bab yang ditekankan (opsional untuk cakupan semester)<input id="fTopik" placeholder="Contoh: Pecahan senilai, atau Gaya dan Gerak"></label>
+        <label>TP / CP / KD dari Anda (opsional, akan dipakai sebagai acuan utama)<textarea id="fTP" placeholder="Tempel daftar TP, KD, atau lingkup materi dari sekolah bila sudah ada"></textarea></label>
+        <label>Karakteristik peserta didik (opsional)<textarea id="fSiswa" placeholder="Contoh: kelas 5 berisi 28 siswa, sebagian masih kesulitan membaca lancar, banyak yang suka belajar lewat praktik"></textarea></label>
+        <div><label>Unggah materi (gambar, PDF, Word, Excel, PowerPoint, teks). Boleh banyak berkas.</label>
+          <div class="drop" id="drop" tabindex="0" role="button">Tarik berkas ke sini atau ketuk untuk memilih<br><span class="sm">Buku teks, LKS, foto halaman buku, modul lama, soal lama. Maksimal 20 MB per berkas.</span></div>
+          <input type="file" id="fFiles" multiple hidden>
+          <div class="files" id="fileList"></div></div>
+        <label>Catatan tambahan (opsional)<textarea id="fCatatan" placeholder="Contoh: gunakan konteks lokal Grobogan, hindari kegiatan yang butuh internet"></textarea></label>
+      </div></div>
+    <div class="card"><h2>3. Pengaturan pembelajaran</h2><div id="cSet"></div></div>
+    <div class="card"><h2>4. Dokumen yang dibuat</h2><div id="cDocs"></div></div>
+    <div class="cta"><div><b id="ctaTitle">Siap dibuat</b><div class="muted sm" id="ctaSub"></div></div><button class="btn primary" id="btnGen"><i data-lucide="sparkles"></i>Buat perangkat ajar</button></div>
+  </section>
+
+  <section class="page" id="p-hasil">
+    <div class="ph"><h1>Hasil</h1><p>Teks pada kertas bisa diedit langsung. Unduhan memakai isi yang terbaru.</p></div>
+    <div id="hasilBody"><div class="card empty">Belum ada hasil. Buat perangkat ajar terlebih dahulu.</div></div>
+  </section>
+
+  <section class="page" id="p-riwayat">
+    <div class="ph"><h1>Riwayat</h1><p>Perangkat yang pernah Anda buat tersimpan di perangkat ini. Pengguna dengan akun juga tersimpan di server.</p></div>
+    <div id="riwayatBody"></div>
+  </section>
+
+  <section class="page" id="p-sekolah">
+    <div class="ph"><h1>Profil sekolah dan kop</h1><p>Dipakai otomatis untuk kop surat, identitas, dan tanda tangan semua dokumen.</p></div>
+    <div class="card"><div id="schoolForm"></div><div class="ad-foot"><button class="btn primary" id="saveSchool">Simpan profil</button></div></div>
+    <div class="card"><h3>Pratinjau kop</h3><div class="paperwrap"><div class="paper" style="min-height:0;padding:10mm" id="kopPv"></div></div></div>
+    <div class="card"><h3>Kunci API Gemini (opsional)</h3><p class="muted sm">Dipakai bila server Arif Digital belum memakai kunci sendiri. Kunci hanya tersimpan di browser ini.</p>
+      <div class="row" style="margin-top:8px"><input id="keyInp" type="password" placeholder="AIza..." style="flex:1;min-width:200px" autocomplete="off"><button class="btn" id="keySave">Simpan kunci</button></div></div>
+  </section>
+
+  <section class="page help" id="p-bantuan">
+    <div class="ph"><h1>Panduan</h1><p>Cara memakai dan dasar penyusunan dokumen.</p></div>
+    <div class="card">
+      <h3 style="margin-top:0">Alur singkat</h3>
+      <ul><li>Isi profil sekolah satu kali. Kop, nama kepala sekolah, dan guru akan masuk ke semua dokumen.</li><li>Pilih kurikulum, jenjang, kelas, dan mata pelajaran. Unggah materi bila ada, hasil akan mengikuti isi materi itu.</li><li>Centang dokumen yang dibutuhkan lalu tekan Buat. Proses sekitar 2 sampai 6 menit tergantung jumlah dokumen.</li><li>Periksa hasil, edit langsung di kertas bila perlu, lalu unduh Word, PDF, atau Excel, atau cetak.</li></ul>
+      <h3>Tiga jalur kurikulum</h3>
+      <ul><li><b>Kurikulum Merdeka dan Pembelajaran Mendalam:</b> Capaian Pembelajaran 2025, ATP, KKTP, modul ajar dengan tahap memahami, mengaplikasi, merefleksi, dan Dimensi Profil Lulusan.</li><li><b>K13:</b> KI dan KD, silabus, RPP tiga komponen inti, KKM, penilaian sikap, pengetahuan, dan keterampilan.</li><li><b>KBC:</b> untuk madrasah, memakai Pembelajaran Mendalam dan Panca Cinta (cinta Allah dan Rasul-Nya, ilmu, lingkungan, diri dan sesama, tanah air).</li></ul>
+      <h3>Yang perlu Anda periksa</h3>
+      <ul><li>Redaksi Capaian Pembelajaran atau KD: bandingkan dengan dokumen resmi terbaru dari Kemendikdasmen atau Kemenag. Bila Anda punya teksnya, tempel di kolom TP/CP/KD agar dipakai apa adanya.</li><li>Alokasi JP dan pekan efektif: sesuaikan dengan kalender pendidikan sekolah Anda.</li><li>Soal dan kunci: tetap dibaca sekilas oleh guru pengampu sebelum dipakai ujian.</li></ul>
+      <h3>Batas uji coba</h3>
+      <p class="muted">Tamu dapat membuat 3 perangkat gratis pada satu perangkat. Setelah itu perlu akun. Minta akun lewat tombol WhatsApp pada jendela masuk.</p>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="../config.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

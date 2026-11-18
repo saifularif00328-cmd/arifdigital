@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>E-Rapor | Arif Digital</title>
+<meta name="description" content="E-Rapor Kurikulum Merdeka, K13, dan KBC untuk SD/MI sampai SMA/MA. Input nilai, deskripsi otomatis, cetak dan unduh rapor PDF/Word/Excel.">
+<meta name="theme-color" content="#0a0a0a">
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../assets/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../shared/app.css">
+<style>
+.grid-wrap{max-height:68vh}
+.tbl td.nm{position:sticky;left:0;background:var(--surface);z-index:1;min-width:170px;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+.tbl th.nm{position:sticky;left:0;z-index:3}
+.tbl td.calc{font-weight:700;text-align:center;background:var(--surface2)}
+.tbl input.bad{border-color:var(--err)}
+.tbl textarea{min-height:56px;min-width:260px;font-size:13px}
+.pcard{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:14px 16px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);margin-bottom:10px}
+.pcard.on{border-color:var(--accent);background:var(--accent-soft)}
+.mcard{border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px;background:var(--surface)}
+.mcard textarea{min-height:120px}
+.stat{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.warn-list{margin:8px 0 0 18px;color:#fcd34d;font-size:13px}
+.hint{font-size:12.5px;color:var(--dim);margin-top:4px}
+.help h3{margin-top:16px}.help ul{margin:6px 0 6px 20px;color:#ccc}.help li{margin-bottom:4px}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="../"><img src="../assets/icon.svg" alt=""><div>E-Rapor<small>by Arif Digital</small></div></a>
+  <div class="sp"></div><div class="acct" id="acct"></div>
+</header>
+<aside class="side" id="side">
+  <div class="grp">Proyek</div>
+  <button class="nav on" data-p="proyek"><i data-lucide="folder-open"></i>Proyek Kelas</button>
+  <div class="grp">Data</div>
+  <button class="nav" data-p="siswa"><i data-lucide="users"></i>Data Siswa</button>
+  <button class="nav" data-p="mapel"><i data-lucide="book-open"></i>Mapel dan TP/KD</button>
+  <button class="nav" data-p="nilai"><i data-lucide="pencil-line"></i>Input Nilai</button>
+  <button class="nav" data-p="karakter"><i data-lucide="heart-handshake"></i><span id="lblKarakter">Sikap / Kokurikuler</span></button>
+  <button class="nav" data-p="tambahan"><i data-lucide="clipboard-check"></i>Kehadiran dan Catatan</button>
+  <div class="grp">Hasil</div>
+  <button class="nav" data-p="cetak"><i data-lucide="printer"></i>Cetak Rapor</button>
+  <button class="nav" data-p="leger"><i data-lucide="table-2"></i>Leger dan Rekap</button>
+  <div class="grp">Lainnya</div>
+  <button class="nav" data-p="sekolah"><i data-lucide="school"></i>Profil Sekolah</button>
+  <button class="nav" data-p="bantuan"><i data-lucide="circle-help"></i>Panduan</button>
+  <a class="nav" href="../generator/"><i data-lucide="wand-sparkles"></i>Generator Perangkat Ajar</a>
+  <a class="nav" href="../"><i data-lucide="arrow-left"></i>Kembali ke beranda</a>
+</aside>
+<nav class="bnav" id="bnav">
+  <button class="on" data-p="proyek"><i data-lucide="folder-open"></i><span>Proyek</span></button>
+  <button data-p="siswa"><i data-lucide="users"></i><span>Siswa</span></button>
+  <button data-p="nilai"><i data-lucide="pencil-line"></i><span>Nilai</span></button>
+  <button data-p="cetak"><i data-lucide="printer"></i><span>Cetak</span></button>
+  <button id="btnMore"><i data-lucide="layout-grid"></i><span>Menu</span></button>
+</nav>
+
+<main class="main">
+  <div id="curBar" class="row between" style="margin-bottom:14px"></div>
+
+  <section class="page on" id="p-proyek">
+    <div class="ph"><h1>Proyek kelas</h1><p>Satu proyek = satu kelas (rombel) untuk satu semester. Data tersimpan di perangkat ini, dan tersinkron ke server bila Anda masuk dengan akun.</p></div>
+    <div class="row" style="margin-bottom:14px"><button class="btn primary" id="btnNew"><i data-lucide="plus"></i>Buat proyek baru</button></div>
+    <div id="projList"></div>
+  </section>
+
+  <section class="page" id="p-siswa"><div id="siswaBody"></div></section>
+  <section class="page" id="p-mapel"><div id="mapelBody"></div></section>
+  <section class="page" id="p-nilai"><div id="nilaiBody"></div></section>
+  <section class="page" id="p-karakter"><div id="karakterBody"></div></section>
+  <section class="page" id="p-tambahan"><div id="tambahanBody"></div></section>
+  <section class="page" id="p-cetak"><div id="cetakBody"></div></section>
+  <section class="page" id="p-leger"><div id="legerBody"></div></section>
+
+  <section class="page" id="p-sekolah">
+    <div class="ph"><h1>Profil sekolah</h1><p>Dipakai untuk identitas rapor, kop (bila diaktifkan), dan tanda tangan kepala sekolah.</p></div>
+    <div class="card"><div id="schoolForm"></div><div class="ad-foot"><button class="btn primary" id="saveSchool">Simpan profil</button></div></div>
+  </section>
+
+  <section class="page help" id="p-bantuan">
+    <div class="ph"><h1>Panduan</h1><p>Urutan kerja yang disarankan.</p></div>
+    <div class="card">
+      <ul><li><b>1. Buat proyek:</b> pilih kurikulum, jenjang, kelas, dan semester. Mata pelajaran standar terisi otomatis dan bisa diubah.</li>
+      <li><b>2. Data siswa:</b> ketik, tempel dari Excel, atau impor berkas Excel/CSV.</li>
+      <li><b>3. Mapel dan TP/KD:</b> isi tujuan pembelajaran (Merdeka/KBC) atau KD (K13) tiap mapel. Tombol AI membantu menyusun daftar bila Anda belum punya.</li>
+      <li><b>4. Input nilai:</b> ketik langsung, tempel dari Excel, atau impor lewat templat Excel. Nilai akhir dan deskripsi capaian terhitung otomatis.</li>
+      <li><b>5. Sikap atau kokurikuler, kehadiran, ekstrakurikuler, dan catatan wali kelas.</b></li>
+      <li><b>6. Cetak rapor:</b> pratinjau per siswa, lalu unduh PDF/Word seluruh kelas atau cetak langsung. Leger tersedia dalam Word, PDF, dan Excel.</li></ul>
+      <h3>Cara hitung</h3>
+      <ul><li><b>Merdeka dan KBC:</b> nilai akhir = rata-rata sumatif lingkup materi dan sumatif akhir semester dengan bobot yang bisa Anda atur (awal 50:50). Deskripsi diambil dari tujuan pembelajaran tertinggi dan terendah terhadap KKTP.</li>
+      <li><b>K13:</b> nilai pengetahuan = (2 x rata-rata penilaian harian + PTS + PAS) / 4; keterampilan = rata-rata nilai keterampilan. Predikat memakai interval dari KKM: (100 - KKM) / 3.</li></ul>
+      <h3>Catatan</h3>
+      <p class="muted">Format rapor mengikuti pedoman umum. Sekolah atau dinas bisa menetapkan format sendiri, jadi cocokkan hasil cetak dengan ketentuan sekolah Anda. Tamu bisa memakai 3 proyek gratis (jatah terpakai saat pertama kali mengunduh, mencetak, atau memakai AI pada sebuah proyek).</p>
+    </div>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="../config.js"></script>
+<script type="module" src="app.js"></script>
+</body>
+</html>

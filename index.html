@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arif Digital | Webapp untuk Guru dan Sekolah</title>
+<meta name="description" content="Arif Digital membuat webapp pendidikan: Generator Perangkat Ajar, E-Rapor, dan layanan website serta integrasi AI untuk guru dan sekolah.">
+<meta name="theme-color" content="#ff6a13">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="assets/icon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="config.js"></script>
+<style>
+:root{
+  --bg:#0a0a0a; --surface:#111111; --surface2:#171717; --border:#262626;
+  --accent:#ff6a13; --accent2:#ff8534; --accent-soft:rgba(255,106,19,.12);
+  --text:#ffffff; --muted:#a3a3a3; --dim:#737373; --ok:#22c55e;
+  --radius:12px; --nav-h:68px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:var(--nav-h)}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer}
+img{max-width:100%;display:block}
+.container{width:100%;max-width:1200px;margin:0 auto;padding:0 24px}
+section{padding:88px 0;position:relative}
+.eyebrow{font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--accent)}
+.sec-title{font-size:clamp(26px,3.4vw,34px);font-weight:700;letter-spacing:-.01em;margin-top:8px}
+.sec-head{text-align:center;margin-bottom:44px}
+.sec-head p{color:var(--muted);max-width:560px;margin:12px auto 0;font-size:15px}
+i[data-lucide]{width:20px;height:20px;stroke-width:2}
+
+/* tombol */
+.btn{display:inline-flex;align-items:center;gap:8px;padding:12px 22px;border-radius:8px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border:1px solid transparent;transition:transform .2s,background .2s,box-shadow .2s,border-color .2s}
+.btn i{width:16px;height:16px}
+.btn-primary{background:var(--accent);color:#fff}
+.btn-primary:hover{background:var(--accent2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(255,106,19,.3)}
+.btn-outline{border-color:var(--accent);color:var(--accent);background:transparent}
+.btn-outline:hover{background:var(--accent-soft);transform:translateY(-2px)}
+.btn-block{width:100%;justify-content:center}
+.btn:disabled{opacity:.6;cursor:wait}
+
+/* navbar */
+nav.top{position:fixed;inset:0 0 auto 0;height:var(--nav-h);z-index:50;background:rgba(10,10,10,.78);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid transparent;transition:border-color .3s}
+nav.top.scrolled{border-bottom-color:var(--border)}
+nav.top .container{height:100%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;letter-spacing:.02em;font-size:18px}
+.logo img{width:32px;height:32px;border-radius:8px}
+.logo span b{color:var(--accent)}
+.menu{display:flex;gap:30px;list-style:none}
+.menu a{font-size:12px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);padding:6px 0;border-bottom:2px solid transparent;transition:color .2s,border-color .2s}
+.menu a:hover,.menu a.active{color:#fff;border-bottom-color:var(--accent)}
+.nav-cta{display:inline-flex}
+.burger{display:none;background:none;border:1px solid var(--border);color:#fff;width:42px;height:42px;border-radius:8px;align-items:center;justify-content:center}
+.drawer{position:fixed;inset:var(--nav-h) 0 0 0;background:rgba(10,10,10,.96);backdrop-filter:blur(14px);z-index:49;padding:24px;display:none;flex-direction:column;gap:6px}
+.drawer.open{display:flex}
+.drawer a{padding:14px 4px;border-bottom:1px solid var(--border);font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:14px;color:var(--muted)}
+.drawer a:hover{color:var(--accent)}
+
+/* hero */
+.hero{padding:calc(var(--nav-h) + 40px) 0 72px;min-height:100vh;display:flex;align-items:center;overflow:hidden;background:
+  radial-gradient(900px 500px at 78% 40%,rgba(255,106,19,.14),transparent 60%),var(--bg)}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:24px;align-items:center;position:relative}
+.code-bg{position:absolute;left:-8px;top:-104px;font:11px/1.55 ui-monospace,Menlo,Consolas,monospace;color:#3b82f6;opacity:.45;white-space:pre;pointer-events:none;display:none}
+.hero h1{font-size:clamp(42px,6.4vw,76px);font-weight:800;line-height:1.02;letter-spacing:-.025em;margin:8px 0 14px}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero .hi{font-size:18px;font-weight:600}
+.role{font-size:clamp(13px,1.6vw,17px);font-weight:600;letter-spacing:.28em;text-transform:uppercase;margin-bottom:18px;min-height:28px}
+.role::after{content:'';display:inline-block;width:2px;height:1.1em;background:#fff;margin-left:6px;vertical-align:-3px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.hero p.lead{color:var(--muted);max-width:480px;font-size:16px}
+.hero-cta{display:flex;flex-wrap:wrap;gap:12px;margin:28px 0 30px}
+.find{display:flex;align-items:center;gap:14px;font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.soc{display:flex;gap:10px}
+.soc a{width:36px;height:36px;border-radius:50%;border:1px solid var(--border);background:var(--surface);display:grid;place-items:center;transition:border-color .2s,color .2s,transform .2s}
+.soc a:hover{border-color:var(--accent);color:var(--accent);transform:translateY(-2px)}
+.soc svg,.soc i{width:16px;height:16px}
+.portrait{position:relative;height:560px;display:flex;align-items:flex-end;justify-content:center}
+.portrait .slash{position:absolute;right:6%;top:2%;width:44%;height:78%;background:linear-gradient(160deg,#ff8a3d,#ff5a00);clip-path:polygon(34% 0,100% 0,66% 100%,0 100%);opacity:.95}
+.portrait .ring{position:absolute;left:4%;bottom:-18%;width:92%;aspect-ratio:1;border:2px solid rgba(255,106,19,.55);border-radius:50%;clip-path:inset(0 0 55% 0)}
+.portrait .dots{position:absolute;right:0;top:0;width:150px;height:110px;background-image:radial-gradient(rgba(255,255,255,.22) 1.4px,transparent 1.5px);background-size:14px 14px}
+.portrait svg.sil,.portrait img.foto{position:relative;z-index:2;height:100%;width:auto;max-width:100%;object-fit:contain;object-position:bottom}
+.badge{position:absolute;right:0;bottom:90px;z-index:3;background:rgba(10,10,10,.85);backdrop-filter:blur(8px);border:1px solid var(--accent);border-radius:10px;padding:14px 18px;min-width:116px}
+.badge b{display:block;font-size:34px;line-height:1;color:#fff;font-weight:800}
+.badge b sup{color:var(--accent);font-size:20px}
+.badge small{display:block;font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+
+/* about */
+.about{background:linear-gradient(180deg,var(--bg),var(--surface) 20%,var(--surface) 80%,var(--bg))}
+.about-grid{display:grid;grid-template-columns:1fr 1.2fr;gap:56px;align-items:center}
+.about h2{font-size:clamp(24px,3vw,32px);line-height:1.2;font-weight:700;margin:10px 0 14px}
+.about p{color:var(--muted);font-size:15px}
+.sign{font-family:'Caveat',cursive;font-size:34px;color:var(--accent);margin-top:16px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px 34px;border-left:1px solid var(--border);padding-left:48px}
+.info{display:flex;gap:14px;align-items:center}
+.ico{width:46px;height:46px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.info small{display:block;font-size:12px;color:var(--dim)}
+.info span{font-size:14px;font-weight:600;word-break:break-word}
+
+/* kartu umum */
+.grid{display:grid;gap:20px}
+.g4{grid-template-columns:repeat(4,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.g2{grid-template-columns:repeat(2,1fr)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);transition:border-color .25s,box-shadow .25s,transform .25s}
+.card:hover{border-color:rgba(255,106,19,.6);box-shadow:0 0 28px rgba(255,106,19,.14);transform:translateY(-3px)}
+.svc{padding:22px}
+.svc .ico{width:42px;height:42px;border:1px solid rgba(255,106,19,.35);margin-bottom:16px;border-radius:8px}
+.svc h3{font-size:16px;margin-bottom:8px}
+.svc p{font-size:13px;color:var(--muted)}
+
+/* produk */
+.prod{padding:28px;display:flex;flex-direction:column;gap:16px;position:relative;overflow:hidden}
+.prod::before{content:'';position:absolute;right:-60px;top:-60px;width:180px;height:180px;background:radial-gradient(circle,rgba(255,106,19,.18),transparent 70%)}
+.prod-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.prod h3{font-size:22px;font-weight:700}
+.tag{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:999px;border:1px solid var(--border);color:var(--muted);white-space:nowrap}
+.tag.live{color:var(--ok);border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.08)}
+.tag.soon{color:var(--accent);border-color:rgba(255,106,19,.4);background:var(--accent-soft)}
+.prod .tagline{color:#e5e5e5;font-weight:500}
+.prod .desc{color:var(--muted);font-size:14px}
+.feat{list-style:none;display:grid;gap:8px;margin:4px 0 8px}
+.feat li{display:flex;gap:10px;font-size:14px;color:#d4d4d4}
+.feat li i{color:var(--accent);flex:none;width:18px;height:18px;margin-top:2px}
+.prod .btn{align-self:flex-start;margin-top:auto}
+
+/* tech */
+.tech{padding:44px 0;border-block:1px solid var(--border);background:var(--surface)}
+.tech-row{display:flex;flex-wrap:wrap;justify-content:center;gap:34px 48px;margin-top:26px}
+.tk{display:flex;flex-direction:column;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.tk img{width:42px;height:42px;object-fit:contain}
+.tk img.inv{filter:invert(1)}
+
+/* proyek */
+.sec-line{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;gap:16px}
+.sec-line h2{font-size:clamp(26px,3.4vw,34px);margin-top:8px}
+.proj{overflow:hidden;display:flex;flex-direction:column}
+.thumb{height:170px;background:linear-gradient(135deg,#1c1c1c,#0e0e0e);position:relative;display:grid;place-items:center;overflow:hidden;border-bottom:1px solid var(--border)}
+.thumb::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 70% 30%,rgba(255,106,19,.28),transparent 55%)}
+.thumb i{width:46px;height:46px;color:var(--accent);position:relative;opacity:.9}
+.thumb img{width:100%;height:100%;object-fit:cover}
+.proj .pb{padding:18px;display:flex;gap:12px;justify-content:space-between;align-items:flex-start;flex:1}
+.proj h3{font-size:16px;margin-bottom:6px}
+.proj p{font-size:13px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.chips span{font-size:11px;padding:3px 9px;border-radius:999px;background:var(--surface2);border:1px solid var(--border);color:var(--muted)}
+.proj .go{width:36px;height:36px;border:1px solid var(--border);border-radius:8px;display:grid;place-items:center;color:var(--muted);flex:none}
+.proj .go:hover{border-color:var(--accent);color:var(--accent)}
+
+/* statistik */
+.stats{padding:40px 0;background:linear-gradient(180deg,#0d0d0d,#141414);border-block:1px solid var(--border);position:relative;overflow:hidden}
+.stats .row{display:grid;grid-template-columns:repeat(4,1fr)}
+.stat{display:flex;align-items:center;justify-content:center;gap:16px;padding:10px 12px;border-right:1px solid var(--border)}
+.stat:last-child{border-right:none}
+.stat i{width:34px;height:34px;color:var(--accent)}
+.stat b{display:block;font-size:34px;line-height:1.1;font-weight:800}
+.stat small{font-size:13px;color:var(--muted)}
+
+/* blog */
+.post{padding:22px;display:flex;flex-direction:column;gap:10px;cursor:pointer;text-align:left;color:inherit}
+.post time{font-size:12px;color:var(--dim)}
+.post h3{font-size:17px}
+.post p{font-size:13px;color:var(--muted);flex:1}
+.post .more{font-size:12px;font-weight:700;letter-spacing:.08em;color:var(--accent);text-transform:uppercase;display:flex;gap:6px;align-items:center}
+.modal{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.78);backdrop-filter:blur(6px);display:none;align-items:flex-start;justify-content:center;padding:40px 16px;overflow-y:auto}
+.modal.open{display:flex}
+.modal .box{background:var(--surface);border:1px solid var(--border);border-radius:14px;max-width:720px;width:100%;padding:32px;position:relative}
+.modal .x{position:absolute;right:14px;top:14px;background:var(--surface2);border:1px solid var(--border);color:#fff;width:36px;height:36px;border-radius:8px;display:grid;place-items:center}
+.modal h2{font-size:26px;line-height:1.25;margin:6px 36px 16px 0}
+.modal .body p{color:#d4d4d4;margin-bottom:14px;font-size:15px}
+.modal .body h4{font-size:17px;margin:22px 0 8px}
+.modal .body ul{margin:0 0 14px 20px;color:#d4d4d4;font-size:15px}
+
+/* testimoni + kontak */
+.tc{display:grid;grid-template-columns:1fr 1.15fr;gap:56px;align-items:start}
+.tc h2{font-size:clamp(24px,3vw,30px);margin:8px 0 12px}
+.tcard{padding:26px;margin-top:20px;min-height:190px}
+.tcard .q{color:var(--accent);font-size:44px;line-height:1;font-weight:800;font-family:Georgia,serif}
+.tcard p{font-size:15px;color:#e5e5e5;margin:4px 0 18px}
+.who{display:flex;gap:12px;align-items:center}
+.av{width:42px;height:42px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font-weight:700;overflow:hidden}
+.av img{width:100%;height:100%;object-fit:cover}
+.who b{display:block;font-size:14px}.who small{color:var(--accent);font-size:12px}
+.slider-ctl{display:flex;align-items:center;gap:12px;margin-top:14px}
+.slider-ctl button{width:36px;height:36px;border-radius:50%;background:var(--surface);border:1px solid var(--border);color:#fff;display:grid;place-items:center}
+.slider-ctl button:hover{border-color:var(--accent);color:var(--accent)}
+.dots2{display:flex;gap:6px}.dots2 i{width:6px;height:6px;border-radius:50%;background:#404040}.dots2 i.on{background:var(--accent)}
+.cinfo{display:grid;gap:12px;margin:18px 0 22px}
+.cinfo div{display:flex;gap:12px;align-items:center;color:#d4d4d4;font-size:14px}
+.cinfo i{color:var(--accent);width:18px;height:18px}
+form.cf{display:grid;gap:12px}
+.field{width:100%;background:#0f0f0f;border:1px solid var(--border);border-radius:8px;color:#fff;padding:13px 14px;font:inherit;font-size:14px;transition:border-color .2s}
+.field:focus{outline:none;border-color:var(--accent)}
+textarea.field{min-height:120px;resize:vertical}
+.hp{position:absolute;left:-9999px}
+.note{font-size:13px;min-height:20px}
+.note.ok{color:var(--ok)}.note.err{color:#f87171}
+
+/* footer */
+footer{background:var(--surface);border-top:1px solid var(--border);padding:56px 0 24px}
+.fgrid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.3fr;gap:36px}
+footer h5{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px}
+footer li{list-style:none;margin-bottom:8px}
+footer li a,footer .muted{color:var(--muted);font-size:14px}
+footer li a:hover{color:var(--accent)}
+.nl{display:flex;gap:8px;margin-top:12px}
+.nl .field{padding:11px 12px}
+.nl button{width:46px;border-radius:8px;border:none;background:var(--accent);color:#fff;display:grid;place-items:center;flex:none}
+.avail{color:var(--accent);font-weight:600;font-size:14px;margin-top:12px;line-height:1.5}
+.fbot{margin-top:40px;padding-top:20px;border-top:1px solid var(--border);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;font-size:12px;color:var(--dim)}
+.fbot a:hover{color:var(--accent)}
+
+/* reveal */
+.rv{opacity:0;transform:translateY(18px);transition:opacity .6s ease,transform .6s ease}
+.rv.in{opacity:1;transform:none}
+.skel{background:linear-gradient(90deg,#141414,#1d1d1d,#141414);background-size:200% 100%;animation:sk 1.2s infinite;border-radius:12px;min-height:150px}
+@keyframes sk{to{background-position:-200% 0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;transform:none}html{scroll-behavior:auto}}
+
+/* responsif */
+@media (min-width:1100px){.code-bg{display:block}}
+@media (max-width:1000px){
+  .menu,.nav-cta{display:none}.burger{display:inline-flex}
+  .hero-grid{grid-template-columns:1fr}.portrait{height:420px;order:-1}
+  .hero{padding-top:calc(var(--nav-h) + 16px)}
+  .about-grid,.tc{grid-template-columns:1fr;gap:32px}
+  .info-grid{border-left:none;padding-left:0}
+  .g4{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(2,1fr)}
+  .fgrid{grid-template-columns:1fr 1fr}
+  .stats .row{grid-template-columns:repeat(2,1fr);gap:18px 0}.stat:nth-child(2){border-right:none}
+}
+@media (max-width:640px){
+  section{padding:64px 0}.container{padding:0 18px}
+  .g4,.g3,.g2{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}
+  .fgrid{grid-template-columns:1fr}
+  .portrait{height:340px}.badge{bottom:30px;padding:10px 14px}.badge b{font-size:26px}
+  .stat{justify-content:flex-start;padding-left:8px}.stat b{font-size:26px}
+  .sec-line{flex-direction:column;align-items:flex-start}
+  .modal .box{padding:22px}
+}
+</style>
+</head>
+<body>
+
+<nav class="top" id="nav">
+  <div class="container">
+    <a href="#home" class="logo"><img src="assets/icon.svg" alt=""><span id="brandText">ARIF <b>DIGITAL</b></span></a>
+    <ul class="menu" id="menu">
+      <li><a href="#home" class="active">Beranda</a></li>
+      <li><a href="#tentang">Tentang</a></li>
+      <li><a href="#layanan">Layanan</a></li>
+      <li><a href="#produk">Produk</a></li>
+      <li><a href="#proyek">Proyek</a></li>
+      <li id="navBlog" style="display:none"><a href="#blog">Blog</a></li>
+      <li><a href="#kontak">Kontak</a></li>
+    </ul>
+    <a href="#kontak" class="btn btn-outline nav-cta">Hubungi Saya <i data-lucide="send"></i></a>
+    <button class="burger" id="burger" aria-label="Menu"><i data-lucide="menu"></i></button>
+  </div>
+</nav>
+<div class="drawer" id="drawer">
+  <a href="#home">Beranda</a><a href="#tentang">Tentang</a><a href="#layanan">Layanan</a><a href="#produk">Produk</a><a href="#proyek">Proyek</a><a href="#blog" id="drawerBlog" style="display:none">Blog</a><a href="#kontak">Kontak</a>
+</div>
+
+<header class="hero" id="home">
+  <div class="container hero-grid">
+    <pre class="code-bg" id="codeBg"></pre>
+    <div class="rv">
+      <p class="hi">Halo, saya</p>
+      <h1 id="heroName">ARIF <em>DIGITAL</em></h1>
+      <div class="role" id="heroRole"></div>
+      <p class="lead" id="heroLead"></p>
+      <div class="hero-cta">
+        <a href="#produk" class="btn btn-primary">Lihat Produk <i data-lucide="arrow-right"></i></a>
+        <a id="heroWa" href="#kontak" class="btn btn-outline">Chat WhatsApp <i data-lucide="message-circle"></i></a>
+      </div>
+      <div class="find">Hubungi di <div class="soc" id="soc"></div></div>
+    </div>
+    <div class="portrait rv" id="portrait">
+      <div class="dots"></div><div class="slash"></div><div class="ring"></div>
+      <svg class="sil" id="sil" viewBox="0 0 400 520" role="img" aria-label="Siluet profil">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#262626"/><stop offset="1" stop-color="#0d0d0d"/></linearGradient>
+          <linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#202020"/><stop offset="1" stop-color="#0a0a0a"/></linearGradient>
+        </defs>
+        <path d="M30 520c0-92 46-150 120-172l50 40 50-40c74 22 120 80 120 172H30Z" fill="url(#g2)" stroke="rgba(255,106,19,.35)" stroke-width="2"/>
+        <path d="M150 348l50 40 50-40-14-30h-72l-14 30Z" fill="#161616"/>
+        <rect x="170" y="290" width="60" height="64" rx="22" fill="#1a1a1a"/>
+        <ellipse cx="200" cy="205" rx="82" ry="96" fill="url(#g1)" stroke="rgba(255,106,19,.45)" stroke-width="2"/>
+        <path d="M120 190c-6-70 40-108 84-106 52 2 78 44 76 104-20-26-52-40-84-40s-58 14-76 42Z" fill="#0a0a0a"/>
+      </svg>
+      <div class="badge"><b id="badgeNum">2</b><small id="badgeLbl">Webapp untuk guru</small></div>
+    </div>
+  </div>
+</header>
+
+<section class="about" id="tentang">
+  <div class="container about-grid">
+    <div class="rv">
+      <span class="eyebrow">Tentang saya</span>
+      <h2 id="aboutHead">Saya membuat webapp yang membantu guru dan sekolah bekerja lebih ringan.</h2>
+      <p id="aboutBio"></p>
+      <div class="sign" id="sign">Saiful Arif</div>
+    </div>
+    <div class="info-grid rv" id="infoGrid"></div>
+  </div>
+</section>
+
+<section id="layanan">
+  <div class="container">
+    <div class="sec-head rv"><span class="eyebrow">Yang saya kerjakan</span><h2 class="sec-title">Layanan</h2></div>
+    <div class="grid g4" id="svcGrid"><div class="skel"></div><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  </div>
+</section>
+
+<section id="produk" style="padding-top:24px">
+  <div class="container">
+    <div class="sec-head rv"><span class="eyebrow">Webapp produk</span><h2 class="sec-title">Produk untuk Guru</h2>
+      <p>Dibuat untuk guru bersertifikat, guru PNS, dan guru yang wajib menyusun perangkat ajar. Dua aplikasi pertama sudah disiapkan.</p></div>
+    <div class="grid g2" id="prodGrid"><div class="skel"></div><div class="skel"></div></div>
+  </div>
+</section>
+
+<div class="tech">
+  <div class="container rv">
+    <span class="eyebrow">Teknologi</span>
+    <div class="tech-row" id="techRow"></div>
+  </div>
+</div>
+
+<section id="proyek">
+  <div class="container">
+    <div class="sec-line rv"><div><span class="eyebrow">Hasil kerja</span><h2>Proyek Pilihan</h2></div></div>
+    <div class="grid g3" id="projGrid"><div class="skel"></div><div class="skel"></div><div class="skel"></div></div>
+  </div>
+</section>
+
+<div class="stats">
+  <div class="container"><div class="row rv" id="statRow"></div></div>
+</div>
+
+<section id="blog" style="display:none">
+  <div class="container">
+    <div class="sec-head rv"><span class="eyebrow">Tulisan</span><h2 class="sec-title">Blog</h2></div>
+    <div class="grid g3" id="postGrid"></div>
+  </div>
+</section>
+
+<section id="kontak">
+  <div class="container tc">
+    <div class="rv">
+      <span class="eyebrow">Testimoni</span>
+      <h2>Kata Pengguna</h2>
+      <div class="card tcard" id="tcard"></div>
+      <div class="slider-ctl" id="sctl" style="display:none">
+        <button id="tprev" aria-label="Sebelumnya"><i data-lucide="chevron-left"></i></button>
+        <button id="tnext" aria-label="Berikutnya"><i data-lucide="chevron-right"></i></button>
+        <div class="dots2" id="tdots"></div>
+      </div>
+    </div>
+    <div class="rv">
+      <span class="eyebrow">Ayo bekerja sama</span>
+      <h2>Hubungi Saya</h2>
+      <p style="color:var(--muted);font-size:14px">Punya kebutuhan webapp, ingin mencoba produk, atau sekadar bertanya? Tulis saja, saya balas secepatnya.</p>
+      <div class="cinfo" id="cinfo"></div>
+      <form class="cf" id="cf" novalidate>
+        <input class="field" name="nama" placeholder="Nama Anda" maxlength="100" required>
+        <input class="field" name="email" type="email" placeholder="Email Anda" maxlength="150" required>
+        <textarea class="field" name="pesan" placeholder="Pesan Anda" maxlength="3000" required></textarea>
+        <input class="hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn btn-primary btn-block" type="submit" id="cfBtn">Kirim Pesan <i data-lucide="send"></i></button>
+        <div class="note" id="cfNote" role="status"></div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="fgrid">
+      <div>
+        <a href="#home" class="logo"><img src="assets/icon.svg" alt=""><span>ARIF <b>DIGITAL</b></span></a>
+        <p class="muted" style="margin-top:12px" id="ftTag">Webapp praktis untuk guru dan sekolah.</p>
+      </div>
+      <div><h5>Tautan</h5><ul><li><a href="#tentang">Tentang</a></li><li><a href="#layanan">Layanan</a></li><li><a href="#produk">Produk</a></li><li><a href="#proyek">Proyek</a></li><li><a href="#kontak">Kontak</a></li></ul></div>
+      <div><h5>Ikuti</h5><div class="soc" id="soc2"></div><p class="avail" id="avail">Terbuka untuk proyek baru.</p></div>
+      <div><h5>Newsletter</h5><p class="muted">Kabar produk baru dan pembaruan fitur.</p>
+        <form class="nl" id="nl" novalidate><input class="field" type="email" name="email" placeholder="Email Anda" maxlength="150" required><button type="submit" aria-label="Berlangganan"><i data-lucide="send"></i></button></form>
+        <div class="note" id="nlNote" role="status"></div>
+      </div>
+    </div>
+    <div class="fbot"><span id="copy"></span><span>Dibuat oleh Saiful Arif &middot; <a href="admin/">Admin</a></span></div>
+  </div>
+</footer>
+
+<div class="modal" id="modal"><div class="box"><button class="x" id="mx" aria-label="Tutup"><i data-lucide="x"></i></button><time id="mTime" style="font-size:12px;color:var(--dim)"></time><h2 id="mTitle"></h2><div class="body" id="mBody"></div></div></div>
+
+<script type="module">
+const C = window.AD_CONFIG;
+const $ = (s, r = document) => r.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const safeUrl = (u) => (/^(https?:\/\/|mailto:|tel:|\.{0,2}\/|[a-z0-9_-]+\/)/i.test(u || '') ? u : '#');
+const WA_SVG = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 3.5A11.8 11.8 0 0 0 12 0C5.4 0 .1 5.3.1 11.9c0 2.1.5 4.1 1.6 5.9L0 24l6.4-1.7a11.9 11.9 0 0 0 5.6 1.4c6.6 0 11.9-5.3 11.9-11.9 0-3.2-1.2-6.1-3.4-8.3ZM12 21.7a9.8 9.8 0 0 1-5-1.4l-.4-.2-3.8 1 1-3.7-.2-.4a9.8 9.8 0 1 1 8.4 4.7Zm5.4-7.3c-.3-.1-1.7-.8-2-.9-.3-.1-.5-.1-.7.1-.2.3-.8.9-.9 1.1-.2.2-.3.2-.6.1a8 8 0 0 1-4-3.5c-.3-.5.3-.5.9-1.6.1-.2 0-.4 0-.5l-.9-2.1c-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5 1.9.8 2.6.9 3.5.7.6-.1 1.7-.7 2-1.4.2-.7.2-1.2.2-1.4-.1-.1-.3-.2-.6-.3Z"/></svg>';
+
+// ===== data bawaan (dipakai saat IS_PREVIEW = true atau Supabase tidak terjangkau) =====
+const FALLBACK = {
+  profile: { brand: 'Arif Digital', nama: 'Saiful Arif', peran: 'Webapp Builder untuk Pendidikan',
+    headline: 'Saya membuat webapp yang membantu guru dan sekolah bekerja lebih ringan.',
+    bio: 'Saya Saiful Arif, builder independen dari Grobogan. Webapp yang saya buat, dari perangkat ajar sampai e-rapor, berjalan di browser, bisa dipakai dari laptop maupun HP, dan datanya tersimpan rapi.',
+    tagline_footer: 'Webapp praktis untuk guru dan sekolah.', email: 'saifularif00328@gmail.com', telepon: '081389927171', whatsapp: '6281389927171',
+    lokasi: 'Grobogan, Jawa Tengah', foto_url: null, fokus: 'Webapp pendidikan dan AI', status_kerja: 'Terbuka untuk proyek', freelance: 'Tersedia',
+    badge_angka: '2', badge_label: 'Webapp untuk guru', link_sosial: {} },
+  services: [
+    { judul: 'Webapp Pendidikan', deskripsi: 'Aplikasi administrasi guru dan sekolah: perangkat ajar, e-rapor, absensi, dan pengelolaan data siswa.', ikon: 'graduation-cap' },
+    { judul: 'Website Sekolah dan Pondok', deskripsi: 'Profil sekolah, pondok, dan lembaga yang siap dipasang di GitHub Pages atau hosting biasa.', ikon: 'globe' },
+    { judul: 'Integrasi AI', deskripsi: 'Menyambungkan Gemini ke alur kerja Anda untuk menulis dokumen, merangkum materi, dan membuat konten.', ikon: 'sparkles' },
+    { judul: 'Backend Supabase', deskripsi: 'Database, login, dan keamanan data dengan Supabase, dirancang sesuai kebutuhan aplikasi.', ikon: 'database' } ],
+  skills: [ ['HTML5','html5'],['CSS3','css3'],['JavaScript','javascript'],['Supabase','supabase'],['Firebase','firebase'],['GitHub','github'],['Gemini AI','google'],['Apps Script','googlecloud'] ].map(([nama, ikon]) => ({ nama, ikon })),
+  products: [
+    { nama: 'Generator Perangkat Ajar', slug: 'generator-perangkat-ajar', tagline: 'Perangkat ajar lengkap dalam hitungan menit.', deskripsi: 'Susun modul ajar, ATP, KKTP, program tahunan dan semester, LKPD, serta asesmen untuk semua jenjang dan mata pelajaran.', fitur: ['Modul ajar, ATP, KKTP, Prota, Promes, LKPD, dan asesmen','Semua jenjang SD/MI sampai SMA/MA','Kurikulum Merdeka, K13, dan Berbasis Cinta','Unggah materi berupa gambar atau file','Kop sekolah terisi otomatis','Unduh Word dan PDF, siap cetak'], link_demo: 'generator/', status: 'segera' },
+    { nama: 'E-Rapor', slug: 'e-rapor', tagline: 'Rapor siswa tanpa pusing hitung nilai.', deskripsi: 'Kelola data siswa, nilai, dan deskripsi capaian untuk semua jenjang. Impor dari Excel dan cetak rapor dengan kop sekolah.', fitur: ['Semua jenjang SD/MI sampai SMA/MA','Tiga kurikulum dalam satu aplikasi','Impor dan ekspor Excel','Deskripsi capaian otomatis','Kop sekolah terisi otomatis','Cetak dan unduh PDF'], link_demo: 'e-rapor/', status: 'segera' } ],
+  projects: [
+    { judul: 'Website Pondok Roudlotul Ummah', deskripsi: 'Website profil pondok pesantren di Grobogan, Jawa Tengah.', teknologi: ['HTML','CSS','JavaScript'] },
+    { judul: 'LaguKu', deskripsi: 'Aplikasi web pribadi untuk membuat lagu dan lirik dengan bantuan AI.', teknologi: ['JavaScript','AI'] },
+    { judul: 'GuruAI', deskripsi: 'Platform administrasi sekolah dalam satu file HTML untuk sekolah di Indonesia.', teknologi: ['HTML','JavaScript'] } ],
+  stats: [ { label: 'Webapp untuk guru', nilai: '2', ikon: 'layout-grid' }, { label: 'Kurikulum didukung', nilai: '3', ikon: 'book-open' }, { label: 'Jenjang SD/MI sampai SMA/MA', nilai: '3', ikon: 'school' }, { label: 'Berbasis web', nilai: '100%', ikon: 'globe' } ],
+  testimonials: [], posts: []
+};
+
+// ===== ambil data =====
+async function loadData() {
+  if (C.IS_PREVIEW) return FALLBACK;
+  try {
+    const { createClient } = await import(C.SUPABASE_ESM);
+    const sb = createClient(C.SUPABASE_URL, C.SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+    window.__sb = sb;
+    const get = (t, order = 'urutan', asc = true) => sb.from(t).select('*').order(order, { ascending: asc });
+    const [pf, sv, sk, pr, pj, st, ts, ps] = await Promise.all([
+      sb.from('profile').select('*').eq('id', 1).maybeSingle(), get('services'), get('skills'), get('products'), get('projects'), get('stats'), get('testimonials'),
+      sb.from('posts').select('id,judul,slug,ringkasan,isi,cover_url,dibuat_pada').order('dibuat_pada', { ascending: false }).limit(6)
+    ]);
+    if (pf.error || !pf.data) throw (pf.error || new Error('profil kosong'));
+    return { profile: pf.data, services: sv.data || [], skills: sk.data || [], products: pr.data || [], projects: pj.data || [], stats: st.data || [], testimonials: ts.data || [], posts: ps.data || [] };
+  } catch (e) {
+    console.warn('Memakai data bawaan:', e);
+    return FALLBACK;
+  }
+}
+
+// ===== render =====
+function renderHero(p) {
+  const brand = (p.brand || 'Arif Digital').trim().split(/\s+/);
+  const first = brand.shift() || '';
+  $('#heroName').innerHTML = `${esc(first.toUpperCase())} <em>${esc(brand.join(' ').toUpperCase())}</em>`;
+  $('#brandText').innerHTML = `${esc(first.toUpperCase())} <b>${esc(brand.join(' ').toUpperCase())}</b>`;
+  $('#heroLead').textContent = p.headline || '';
+  document.title = `${p.brand || 'Arif Digital'} | Webapp untuk Guru dan Sekolah`;
+  const roleEl = $('#heroRole'); const txt = p.peran || ''; let i = 0;
+  if (matchMedia('(prefers-reduced-motion:reduce)').matches) roleEl.textContent = txt;
+  else (function type() { roleEl.textContent = txt.slice(0, i++); if (i <= txt.length) setTimeout(type, 55); })();
+  $('#badgeNum').textContent = p.badge_angka || '';
+  $('#badgeLbl').textContent = p.badge_label || '';
+  if (p.foto_url) { const img = document.createElement('img'); img.className = 'foto'; img.alt = p.nama; img.src = p.foto_url; $('#sil').replaceWith(img); }
+  $('#codeBg').textContent = `const arif = {\n  brand: '${(p.brand || '').replace(/'/g, '')}',\n  peran: 'Webapp Builder',\n  produk: ['Perangkat Ajar', 'E-Rapor'],\n  backend: 'Supabase'\n};\n\nfunction bangun() {\n  return 'Kerja guru lebih ringan';\n}`;
+  const wa = p.whatsapp ? `https://wa.me/${String(p.whatsapp).replace(/\D/g, '')}?text=${encodeURIComponent('Halo, saya ingin bertanya tentang webapp Arif Digital.')}` : '#kontak';
+  $('#heroWa').href = wa; if (p.whatsapp) $('#heroWa').target = '_blank', $('#heroWa').rel = 'noopener';
+  const ls = p.link_sosial || {};
+  const links = [];
+  if (p.whatsapp) links.push(['WhatsApp', wa, WA_SVG]);
+  if (p.email) links.push(['Email', `mailto:${p.email}`, '<i data-lucide="mail"></i>']);
+  if (ls.github) links.push(['GitHub', ls.github, '<i data-lucide="github"></i>']);
+  if (ls.youtube) links.push(['YouTube', ls.youtube, '<i data-lucide="youtube"></i>']);
+  if (ls.instagram) links.push(['Instagram', ls.instagram, '<i data-lucide="instagram"></i>']);
+  if (ls.tiktok) links.push(['TikTok', ls.tiktok, '<i data-lucide="music-2"></i>']);
+  const socHtml = links.map(([n, u, ic]) => `<a href="${esc(safeUrl(u))}" target="_blank" rel="noopener" aria-label="${n}" title="${n}">${ic}</a>`).join('');
+  $('#soc').innerHTML = socHtml; $('#soc2').innerHTML = socHtml;
+}
+function renderAbout(p) {
+  $('#aboutHead').textContent = p.headline || '';
+  $('#aboutBio').textContent = p.bio || '';
+  $('#sign').textContent = p.nama || '';
+  const rows = [['user','Nama',p.nama],['briefcase','Fokus',p.fokus],['mail','Email',p.email],['map-pin','Lokasi',p.lokasi],['globe','Ketersediaan',p.status_kerja],['send','Freelance',p.freelance]].filter((r) => r[2]);
+  $('#infoGrid').innerHTML = rows.map(([ic, l, v]) => `<div class="info"><div class="ico"><i data-lucide="${ic}"></i></div><div><small>${l}</small><span>${esc(v)}</span></div></div>`).join('');
+  $('#cinfo').innerHTML = [['mail', p.email], ['phone', p.telepon], ['map-pin', p.lokasi]].filter((r) => r[1]).map(([ic, v]) => `<div><i data-lucide="${ic}"></i>${esc(v)}</div>`).join('');
+  $('#ftTag').textContent = p.tagline_footer || '';
+  $('#avail').textContent = p.status_kerja ? `${p.status_kerja}. Ayo bangun sesuatu yang berguna.` : '';
+  $('#copy').textContent = `© ${new Date().getFullYear()} ${p.brand || 'Arif Digital'}. Hak cipta dilindungi.`;
+}
+function renderServices(list) {
+  $('#svcGrid').innerHTML = list.map((s) => `<article class="card svc rv"><div class="ico"><i data-lucide="${esc(s.ikon || 'code')}"></i></div><h3>${esc(s.judul)}</h3><p>${esc(s.deskripsi)}</p></article>`).join('');
+}
+function renderProducts(list) {
+  const msg = encodeURIComponent('Halo, saya tertarik dengan ');
+  $('#prodGrid').innerHTML = list.map((p) => {
+    const live = p.status === 'aktif';
+    const feats = (Array.isArray(p.fitur) ? p.fitur : []).map((f) => `<li><i data-lucide="check"></i><span>${esc(f)}</span></li>`).join('');
+    const btn = live
+      ? `<a class="btn btn-primary" href="${esc(safeUrl(p.link_demo))}">Buka Aplikasi <i data-lucide="arrow-right"></i></a>`
+      : `<a class="btn btn-outline" href="https://wa.me/${C.WHATSAPP}?text=${msg}${encodeURIComponent(p.nama)}" target="_blank" rel="noopener">Tanya Jadwal Rilis <i data-lucide="message-circle"></i></a>`;
+    return `<article class="card prod rv"><div class="prod-top"><h3>${esc(p.nama)}</h3><span class="tag ${live ? 'live' : 'soon'}">${live ? 'Tersedia' : 'Segera hadir'}</span></div>
+      <div class="tagline">${esc(p.tagline)}</div><p class="desc">${esc(p.deskripsi)}</p><ul class="feat">${feats}</ul>${btn}</article>`;
+  }).join('');
+}
+function renderSkills(list) {
+  $('#techRow').innerHTML = list.map((s) => `<div class="tk"><img class="${s.ikon === 'github' ? 'inv' : ''}" loading="lazy" alt="" src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${esc(s.ikon)}/${esc(s.ikon)}-original.svg" onerror="this.onerror=null;this.src='https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/${esc(s.ikon)}/${esc(s.ikon)}-plain.svg'">${esc(s.nama)}</div>`).join('');
+}
+function renderProjects(list) {
+  const items = list.filter((p) => p.unggulan !== false);
+  $('#projGrid').innerHTML = items.map((p) => {
+    const link = p.link ? `<a class="go" href="${esc(safeUrl(p.link))}" target="_blank" rel="noopener" aria-label="Buka ${esc(p.judul)}"><i data-lucide="external-link"></i></a>` : '';
+    return `<article class="card proj rv"><div class="thumb">${p.gambar_url ? `<img loading="lazy" alt="${esc(p.judul)}" src="${esc(p.gambar_url)}">` : '<i data-lucide="layout-dashboard"></i>'}</div>
+      <div class="pb"><div><h3>${esc(p.judul)}</h3><p>${esc(p.deskripsi)}</p><div class="chips">${(p.teknologi || []).map((t) => `<span>${esc(t)}</span>`).join('')}</div></div>${link}</div></article>`;
+  }).join('');
+}
+function renderStats(list) {
+  $('#statRow').innerHTML = list.map((s) => `<div class="stat"><i data-lucide="${esc(s.ikon || 'star')}"></i><div><b data-count="${esc(s.nilai)}">${esc(s.nilai)}</b><small>${esc(s.label)}</small></div></div>`).join('');
+}
+function countUp() {
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return; io.unobserve(e.target);
+    const raw = e.target.dataset.count; const m = raw.match(/^(\d+)(.*)$/); if (!m || matchMedia('(prefers-reduced-motion:reduce)').matches) return;
+    const to = +m[1]; const t0 = performance.now();
+    (function step(t) { const k = Math.min((t - t0) / 1100, 1); e.target.textContent = Math.round(to * (1 - Math.pow(1 - k, 3))) + m[2]; if (k < 1) requestAnimationFrame(step); })(t0);
+  }), { threshold: .6 });
+  document.querySelectorAll('[data-count]').forEach((n) => io.observe(n));
+}
+function renderPosts(list) {
+  if (!list.length) return;
+  $('#blog').style.display = ''; $('#navBlog').style.display = ''; $('#drawerBlog').style.display = '';
+  const fmt = (d) => new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+  $('#postGrid').innerHTML = list.map((p, i) => `<button class="card post rv" data-i="${i}"><time>${fmt(p.dibuat_pada)}</time><h3>${esc(p.judul)}</h3><p>${esc(p.ringkasan)}</p><span class="more">Baca <i data-lucide="arrow-right"></i></span></button>`).join('');
+  $('#postGrid').onclick = (e) => {
+    const b = e.target.closest('.post'); if (!b) return; const p = list[+b.dataset.i];
+    $('#mTime').textContent = fmt(p.dibuat_pada); $('#mTitle').textContent = p.judul;
+    const html = String(p.isi || '').split(/\n{2,}/).map((blk) => {
+      const t = blk.trim(); if (!t) return '';
+      if (t.startsWith('### ')) return `<h4>${esc(t.slice(4))}</h4>`;
+      if (/^[-*] /m.test(t)) return `<ul>${t.split('\n').map((l) => `<li>${esc(l.replace(/^[-*]\s+/, ''))}</li>`).join('')}</ul>`;
+      return `<p>${esc(t).replace(/\n/g, '<br>')}</p>`;
+    }).join('');
+    $('#mBody').innerHTML = html; $('#modal').classList.add('open'); document.body.style.overflow = 'hidden';
+  };
+}
+let tIndex = 0, tTimer;
+function renderTestimonials(list) {
+  const box = $('#tcard');
+  if (!list.length) {
+    box.innerHTML = `<div class="q">&ldquo;</div><p>Belum ada testimoni. Jadilah pengguna pertama, lalu ceritakan pengalaman Anda memakai Generator Perangkat Ajar atau E-Rapor.</p><a href="#kontak" class="btn btn-outline" style="margin-top:4px">Kirim Masukan <i data-lucide="message-circle"></i></a>`;
+    return;
+  }
+  $('#sctl').style.display = 'flex';
+  const show = (i) => {
+    tIndex = (i + list.length) % list.length; const t = list[tIndex];
+    box.innerHTML = `<div class="q">&ldquo;</div><p>${esc(t.isi)}</p><div class="who"><div class="av">${t.avatar_url ? `<img alt="" src="${esc(t.avatar_url)}">` : esc((t.nama || '?')[0])}</div><div><b>${esc(t.nama)}</b><small>${esc(t.jabatan || '')}</small></div></div>`;
+    $('#tdots').innerHTML = list.map((_, k) => `<i class="${k === tIndex ? 'on' : ''}"></i>`).join('');
+  };
+  const auto = () => { clearInterval(tTimer); tTimer = setInterval(() => show(tIndex + 1), 6000); };
+  $('#tprev').onclick = () => { show(tIndex - 1); auto(); }; $('#tnext').onclick = () => { show(tIndex + 1); auto(); };
+  show(0); auto();
+}
+
+// ===== interaksi umum =====
+function initUI() {
+  const nav = $('#nav'); const onScroll = () => nav.classList.toggle('scrolled', scrollY > 10); onScroll(); addEventListener('scroll', onScroll, { passive: true });
+  $('#burger').onclick = () => { $('#drawer').classList.toggle('open'); };
+  $('#drawer').onclick = (e) => { if (e.target.tagName === 'A') $('#drawer').classList.remove('open'); };
+  $('#mx').onclick = closeModal; $('#modal').onclick = (e) => { if (e.target.id === 'modal') closeModal(); };
+  addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+  function closeModal() { $('#modal').classList.remove('open'); document.body.style.overflow = ''; }
+  const links = [...document.querySelectorAll('#menu a')];
+  const secs = links.map((a) => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  const spy = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) links.forEach((a) => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id)); }), { rootMargin: '-45% 0px -50% 0px' });
+  secs.forEach((s) => spy.observe(s));
+}
+function observeReveal() {
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
+  document.querySelectorAll('.rv:not(.in)').forEach((n) => io.observe(n));
+}
+
+// ===== form =====
+function initForms() {
+  const sb = () => window.__sb;
+  $('#cf').addEventListener('submit', async (e) => {
+    e.preventDefault(); const f = e.target; const note = $('#cfNote'); const btn = $('#cfBtn');
+    if (f.website.value) return; // jebakan bot
+    const nama = f.nama.value.trim(), email = f.email.value.trim(), pesan = f.pesan.value.trim();
+    note.className = 'note';
+    if (!nama || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email) || !pesan) { note.className = 'note err'; note.textContent = 'Isi nama, email yang benar, dan pesan dulu ya.'; return; }
+    btn.disabled = true;
+    try {
+      if (C.IS_PREVIEW || !sb()) throw new Error('offline');
+      const { error } = await sb().from('messages').insert({ nama, email, pesan }); if (error) throw error;
+      f.reset(); note.className = 'note ok'; note.textContent = 'Pesan terkirim. Terima kasih, saya balas secepatnya.';
+    } catch (err) {
+      note.className = 'note err'; note.innerHTML = `Pesan belum terkirim. Silakan kirim lewat <a style="text-decoration:underline" href="https://wa.me/${C.WHATSAPP}?text=${encodeURIComponent(`Halo, saya ${nama}. ${pesan}`)}" target="_blank" rel="noopener">WhatsApp</a>.`;
+    } finally { btn.disabled = false; }
+  });
+  $('#nl').addEventListener('submit', async (e) => {
+    e.preventDefault(); const note = $('#nlNote'); const email = e.target.email.value.trim(); note.className = 'note';
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(email)) { note.className = 'note err'; note.textContent = 'Alamat email belum benar.'; return; }
+    try {
+      if (C.IS_PREVIEW || !sb()) throw new Error('offline');
+      const { error } = await sb().from('subscribers').insert({ email });
+      if (error && error.code !== '23505') throw error;
+      e.target.reset(); note.className = 'note ok'; note.textContent = 'Terdaftar. Terima kasih.';
+    } catch { note.className = 'note err'; note.textContent = 'Belum berhasil, coba lagi nanti.'; }
+  });
+}
+
+// ===== jalankan =====
+(async function main() {
+  initUI(); initForms();
+  const d = await loadData();
+  renderHero(d.profile); renderAbout(d.profile); renderServices(d.services); renderProducts(d.products);
+  renderSkills(d.skills); renderProjects(d.projects); renderStats(d.stats); renderPosts(d.posts); renderTestimonials(d.testimonials);
+  lucide.createIcons(); observeReveal(); countUp();
+  if ('serviceWorker' in navigator && location.protocol.startsWith('http')) navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>
