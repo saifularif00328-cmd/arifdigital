@@ -422,8 +422,8 @@ const FALLBACK = {
     { judul: 'Backend Supabase', deskripsi: 'Database, login, dan keamanan data dengan Supabase, dirancang sesuai kebutuhan aplikasi.', ikon: 'database' } ],
   skills: [ ['HTML5','html5'],['CSS3','css3'],['JavaScript','javascript'],['Supabase','supabase'],['Firebase','firebase'],['GitHub','github'],['Gemini AI','google'],['Apps Script','googlecloud'] ].map(([nama, ikon]) => ({ nama, ikon })),
   products: [
-    { nama: 'Generator Perangkat Ajar', slug: 'generator-perangkat-ajar', tagline: 'Perangkat ajar lengkap dalam hitungan menit.', deskripsi: 'Susun modul ajar, ATP, KKTP, program tahunan dan semester, LKPD, serta asesmen untuk semua jenjang dan mata pelajaran.', fitur: ['Modul ajar, ATP, KKTP, Prota, Promes, LKPD, dan asesmen','Semua jenjang SD/MI sampai SMA/MA','Kurikulum Merdeka, K13, dan Berbasis Cinta','Unggah materi berupa gambar atau file','Kop sekolah terisi otomatis','Unduh Word dan PDF, siap cetak'], link_demo: 'generator/', status: 'segera' },
-    { nama: 'E-Rapor', slug: 'e-rapor', tagline: 'Rapor siswa tanpa pusing hitung nilai.', deskripsi: 'Kelola data siswa, nilai, dan deskripsi capaian untuk semua jenjang. Impor dari Excel dan cetak rapor dengan kop sekolah.', fitur: ['Semua jenjang SD/MI sampai SMA/MA','Tiga kurikulum dalam satu aplikasi','Impor dan ekspor Excel','Deskripsi capaian otomatis','Kop sekolah terisi otomatis','Cetak dan unduh PDF'], link_demo: 'e-rapor/', status: 'segera' } ],
+    { nama: 'Generator Perangkat Ajar', slug: 'generator-perangkat-ajar', tagline: 'Perangkat ajar lengkap dalam hitungan menit.', deskripsi: 'Susun modul ajar, ATP, KKTP, program tahunan dan semester, LKPD, serta asesmen untuk semua jenjang dan mata pelajaran.', fitur: ['Modul ajar, ATP, KKTP, Prota, Promes, LKPD, dan asesmen','Semua jenjang SD/MI sampai SMA/MA','Kurikulum Merdeka, K13, dan Berbasis Cinta','Unggah materi berupa gambar atau file','Kop sekolah terisi otomatis','Unduh Word dan PDF, siap cetak'], link_demo: 'generator/', status: 'aktif' },
+    { nama: 'E-Rapor', slug: 'e-rapor', tagline: 'Rapor siswa tanpa pusing hitung nilai.', deskripsi: 'Kelola data siswa, nilai, dan deskripsi capaian untuk semua jenjang. Impor dari Excel dan cetak rapor dengan kop sekolah.', fitur: ['Semua jenjang SD/MI sampai SMA/MA','Tiga kurikulum dalam satu aplikasi','Impor dan ekspor Excel','Deskripsi capaian otomatis','Kop sekolah terisi otomatis','Cetak dan unduh PDF'], link_demo: 'e-rapor/', status: 'aktif' } ],
   projects: [
     { judul: 'Website Pondok Roudlotul Ummah', deskripsi: 'Website profil pondok pesantren di Grobogan, Jawa Tengah.', teknologi: ['HTML','CSS','JavaScript'] },
     { judul: 'LaguKu', deskripsi: 'Aplikasi web pribadi untuk membuat lagu dan lirik dengan bantuan AI.', teknologi: ['JavaScript','AI'] },
@@ -496,7 +496,9 @@ function renderServices(list) {
 }
 function renderProducts(list) {
   const msg = encodeURIComponent('Halo, saya tertarik dengan ');
+  const LOKAL = { 'generator-perangkat-ajar': 'generator/', 'e-rapor': 'e-rapor/' };
   $('#prodGrid').innerHTML = list.map((p) => {
+    if (LOKAL[p.slug]) p = { ...p, status: 'aktif', link_demo: LOKAL[p.slug] };
     const live = p.status === 'aktif';
     const feats = (Array.isArray(p.fitur) ? p.fitur : []).map((f) => `<li><i data-lucide="check"></i><span>${esc(f)}</span></li>`).join('');
     const btn = live
