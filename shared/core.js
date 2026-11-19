@@ -299,8 +299,8 @@ function extractText(j) {
 }
 /** Satu panggilan AI. opts: {system, parts, json, maxTokens, temperature, jobId, produk, signal} */
 export async function aiCall(opts) {
-  const { system, parts, json = true, maxTokens = 16000, temperature = 0.6, jobId, produk, signal } = opts;
-  const body = { contents: [{ role: 'user', parts }], generationConfig: { temperature, maxOutputTokens: maxTokens, ...(json ? { responseMimeType: 'application/json' } : {}) } };
+  const { system, parts, json = true, maxTokens = 16000, temperature = 0.6, think = 0, jobId, produk, signal } = opts;
+  const body = { contents: [{ role: 'user', parts }], generationConfig: { temperature, maxOutputTokens: maxTokens, thinkingConfig: { thinkingBudget: think }, ...(json ? { responseMimeType: 'application/json' } : {}) } };
   if (system) body.systemInstruction = { parts: [{ text: system }] };
   const models = await modelList(); let lastErr;
   // 1) kunci milik server (Edge Function)
@@ -318,6 +318,7 @@ export async function aiCall(opts) {
         if (res.status === 404 && /not found|tidak ditemukan/i.test(JSON.stringify(err))) { lastErr = new Error('Model tidak tersedia'); break; }
         if (res.status === 401 || res.status === 402 || res.status === 403) { const e = new Error(err.message || 'Akses ditolak. Masuk dengan akun Anda.'); e.gate = true; throw e; }
         if (res.status === 404 && err.error === 'function_not_found') { serverKeyOk = false; break; }
+        if (res.status === 400 && body.generationConfig.thinkingConfig && /thinking/i.test(JSON.stringify(err))) { delete body.generationConfig.thinkingConfig; a--; continue; }
         lastErr = new Error((err.error && err.error.message) || err.message || `Kesalahan server AI (${res.status})`);
         if ([429, 500, 502, 503, 504].includes(res.status)) { await wait(1500 * (a + 1) ** 2, signal); continue; }
         throw lastErr;
@@ -335,6 +336,7 @@ export async function aiCall(opts) {
       if (res.ok) return extractText(await res.json());
       let err = {}; try { err = await res.json(); } catch { /* abaikan */ }
       const msg = (err.error && err.error.message) || `Kesalahan AI (${res.status})`;
+      if (res.status === 400 && body.generationConfig.thinkingConfig && /thinking/i.test(msg)) { delete body.generationConfig.thinkingConfig; a--; continue; }
       if (res.status === 400 && /API key/i.test(msg)) { setUserKey(''); throw new Error('Kunci API tidak valid. Masukkan ulang kunci yang benar.'); }
       if (res.status === 404) { lastErr = new Error(msg); break; }
       if ([429, 500, 502, 503, 504].includes(res.status)) { lastErr = new Error(res.status === 429 ? 'Batas pemakaian AI tercapai. Tunggu sebentar lalu coba lagi.' : msg); await wait(2000 * (a + 1) ** 2, signal); continue; }
@@ -681,3 +683,14 @@ export async function zipFiles(files) {
 
 /* ---- ikon (Lucide) ---- */
 export function icons() { if (window.lucide) window.lucide.createIcons(); }
+
+/* tombol WhatsApp di topbar aplikasi */
+(function () {
+  const put = () => {
+    const acct = document.getElementById('acct'); if (!acct || document.getElementById('waTop')) return;
+    const a = document.createElement('a'); a.id = 'waTop'; a.className = 'wa-top'; a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('aria-label', 'Tanya lewat WhatsApp'); a.title = 'Tanya lewat WhatsApp';
+    a.href = `https://wa.me/${String((CFG && CFG.WHATSAPP) || '6281389927171').replace(/\D/g, '')}?text=${encodeURIComponent('Halo Arif Digital, saya butuh bantuan memakai aplikasi.')}`;
+    a.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>'; acct.parentNode.insertBefore(a, acct);
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', put); else put();
+})();

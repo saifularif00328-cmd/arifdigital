@@ -156,11 +156,12 @@ async function generate() {
 async function runPipeline(ff, sch, rf, ui, jobId) {
   const k13 = ff.kur === 'k13'; const sel = (id) => !!ff.docs[id];
   const base = [{ text: 'KONTEKS PENYUSUNAN:\n' + P.buildContext(ff) }, ...fileParts(rf)];
-  const call = (prompt, maxTokens = 26000) => aiJSON({ system: P.SYSTEM, parts: [...base, { text: prompt }], maxTokens, produk: PRODUK, jobId });
+  const t0 = Date.now(); const secs = () => Math.round((Date.now() - t0) / 1000);
+  const call = (prompt, maxTokens = 26000, think = 0) => aiJSON({ system: P.SYSTEM, parts: [...base, { text: prompt }], maxTokens, think, produk: PRODUK, jobId });
   const sems = P.semesters(ff); const targets = {};
   sems.forEach((s) => { targets[s] = ff.cakupan === 'topik' ? Math.max(2, num(ff.jpTopik, 8)) : Math.max(2, (P.weeksOf(ff, s) - 1) * Math.max(1, num(ff.jpMinggu, 2))); });
-  ui.text(k13 ? 'Menyusun silabus dan KD...' : 'Menyusun CP, TP, dan alur...', 'Langkah utama, biasanya 20 sampai 60 detik'); ui.progress(6);
-  let bj, units; try { bj = await call(k13 ? P.promptSilabus(ff, targets) : P.promptATP(ff, targets), 22000); units = k13 ? P.unitsFromSilabus(bj, ff, targets) : P.unitsFromATP(bj, ff, targets); }
+  ui.text(k13 ? 'Menyusun silabus dan KD...' : 'Menyusun CP, TP, dan alur...', 'Langkah utama, biasanya 10 sampai 30 detik'); ui.progress(6);
+  let bj, units; try { bj = await call(k13 ? P.promptSilabus(ff, targets) : P.promptATP(ff, targets), 22000, 1024); units = k13 ? P.unitsFromSilabus(bj, ff, targets) : P.unitsFromATP(bj, ff, targets); }
   catch (e) { throw new Error('Tahap awal gagal: ' + (e.message || e)); }
   const docs = []; const tasks = [];
   const push = (d) => docs.push(d);
@@ -186,11 +187,11 @@ async function runPipeline(ff, sch, rf, ui, jobId) {
   const runTask = async (t) => {
     try { const r = await t.fn(); r.forEach(push); }
     catch (e) { fails++; if (e.gate) throw e; push({ id: 'gagal-' + t.label, title: t.label + ' (gagal)', failed: true, error: e.message || String(e), blocks: [], retry: t.fn, label: t.label }); }
-    done++; ui.progress(10 + (done / total) * 88); ui.text(`Menyusun dokumen... ${done}/${total}`, t.label + ' selesai');
+    done++; ui.progress(10 + (done / total) * 88); ui.text(`Menyusun dokumen... ${done}/${total}`, `${t.label} selesai | ${secs()} detik berjalan`);
   };
   const queue = [...tasks]; const worker = async () => { while (queue.length) await runTask(queue.shift()); };
   ui.text(`Menyusun dokumen... 0/${tasks.length}`, 'Beberapa dokumen dibuat bersamaan'); ui.progress(14);
-  await Promise.all([worker(), worker(), worker()]);
+  await Promise.all(Array.from({ length: Math.min(6, Math.max(1, tasks.length)) }, () => worker()));
   docs.sort((a, b) => prio(a) - prio(b) || String(a.id).localeCompare(String(b.id), undefined, { numeric: true }));
   if (!docs.some((d) => !d.failed)) throw new Error('Semua dokumen gagal dibuat. ' + (docs[0] && docs[0].error ? docs[0].error : ''));
   return { docs, fails };

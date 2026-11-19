@@ -1,5 +1,5 @@
 // Service worker sederhana: cache aset statis milik situs sendiri. Permintaan ke domain lain tidak disentuh.
-const CACHE = 'arif-digital-v2';
+const CACHE = 'arif-digital-v3';
 const ASET = ['./', 'index.html', 'config.js', 'manifest.webmanifest', 'assets/icon.svg'];
 self.addEventListener('install', (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(ASET)).then(() => self.skipWaiting()));
